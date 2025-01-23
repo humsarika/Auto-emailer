@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Emailer</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: url(../static/background.png) no-repeat center center fixed;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .main-container {
+            margin: 0 auto;
+            max-width: auto;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-top-container {
+            background: #d3be8e97;
+            margin: 50px 250px;
+            padding: 70px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.237);
+            margin-bottom: 20px;
+            /* justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column; */
+        }
+
+        .form-container {
+            padding: 10px;
+            margin: auto;
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .details-top-container {
+            padding: 10px;
+            margin: auto;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .details-top-container input[type="text"],
+        .details-top-container input[type="email"],
+        .details-top-container input[type="password"] {
+            width: 80%;
+            height: 20px;
+            margin-bottom: 20px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .personal-details-container {
+            margin: 10px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .row-flex-container{
+            margin: 10px;
+            justify-content: space-around;
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+        }
+
+        label {
+            margin-bottom: 10px;
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            display: none;
+            visibility: hidden;
+        }
+
+        .custom-file-label {
+            background: transparent;
+            color: rgb(72, 72, 72);
+            padding: 8px 15px;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .custom-file-label:hover {
+            background-color: #d7d7d7;
+        }
+
+        .button {
+            background-color: #368738;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            margin: auto;
+            background-color: #0f0f0f;
+            color: white;
+            font-size: 1rem;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #67b96b;
+        }
+
+        .submit-button:hover {
+            background-color: #585858;
+        }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8d7da;
+            color: #992b36;
+        }
+
+        .privacy-notice {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .privacy-notice h2 {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .privacy-notice p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div>
+            <h1>Send Your Bulk Emails to HRs</h1>
+        </div>
+        <div class="header">
+            <p>Please upload your HR details in a CSV file.</p>
+            <p>
+                The CSV file should include the following columns in this order: HR
+                Name, HR Last Name, HR Email, and Company.
+            </p>
+            <p>Additionally, upload your resume in PDF format.</p>
+        </div>
+
+        <div class="form-top-container">
+            <div class="details-top-container">
+                <div class="personal-details-container">
+                    <div>
+                        <label for="user_fullname">Full Name:</label>
+                    <input type="text" id="user_fullname" name="user_fullname" required />
+                    </div>
+                    <div>
+                        <label for="email_subject"> Email Subject:</label>
+                    <input type="text" id="email_subject" name="email_subject" required />
+                    </div>
+
+                    <div>
+                        <label for="user_email">Google Email id:</label>
+                    <input type="email" id="user_email" name="user_email" required />
+                    </div>
+
+                    <div>
+                        <label for="user_password">Email Password:</label>
+                    <input type="password" id="user_password" name="user_password" required />
+                    </div>
+
+                    <div>
+                        <label for="job_role">Job role </label>
+                        <input type="text" id="job_role" name="job_role" required />
+                    </div>
+                </div>
+                <div class="row-flex-container">
+                    <label for="degree">Degree </label>
+                    <input type="text" id="degree" name="degree" required />
+
+                    <label for="major">Major </label>
+                    <input type="text" id="major" name="major" required />
+                </div>
+            </div>
+            <div class="form-container">
+                <div class="row-flex-container">
+                    <form id="uploadCsvForm" method="POST" enctype="multipart/form-data">
+                        <label for="csv_file">Upload Email data File:</label><br />
+                        <div class="file-input-container">
+                            <input type="file" id="csv_file" name="csv_file" accept=".csv" class="file-input" />
+                            <label for="csv_file" class="custom-file-label">Choose CSV file</label>
+                        </div>
+                        <input class="button" type="submit" value="Upload" />
+                    </form>
+                </div>
+                <div class="row-flex-container">
+                    <form id="uploadResumeForm" method="POST" enctype="multipart/form-data">
+                        <label for="resume_file">Upload Resume/CV :</label><br />
+                        <div class="file-input-container">
+                            <input type="file" id="resume_file" name="resume_file" accept=".pdf" class="file-input" />
+                            <label for="resume_file" class="custom-file-label">Choose PDF file</label>
+                        </div>
+                        <input class="button" type="submit" value="Upload" />
+                    </form>
+                </div>
+            </div>
+            <!-- Flash messages section -->
+        <div id="flashMessages" class="flash-messages" style="display: none"></div>
+        </div>
+
+        <div class="submit-button-container">       
+            <form id="sendEmailsForm" method="POST">
+                <input class="submit-button" type="submit" value="Send Emails" />
+            </form>
+        </div>
+        <div class="privacy-notice">
+            <h2>Privacy Notice</h2>
+            <p>
+                We take your privacy seriously. We do not store any of your personal
+                data, including your email address, password, or any other information
+                you provide to us.
+            </p>
+            <p>
+                When you use our application, we only use your email address and
+                password to send emails on your behalf. We do not retain any of this
+                information after the email has been sent.
+            </p>
+            <p>
+                If you have any concerns about your privacy, please contact us at
+                sarika.kush2212@gmail.com .
+            </p>
+        </div>
+
+        
+    </div>
+    <script>
+        document
+            .getElementById("uploadCsvForm")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/upload_csv", true);
+                xhr.onload = function () {
+                    var response = JSON.parse(xhr.responseText);
+                    var flashMessages = document.getElementById("flashMessages");
+                    flashMessages.style.display = "block";
+                    flashMessages.innerHTML = response.message;
+                    if (response.status === "success") {
+                        flashMessages.className = "flash-messages";
+                    } else {
+                        flashMessages.className = "error-message";
+                    }
+                };
+                xhr.send(formData);
+            });
+
+        document
+            .getElementById("uploadResumeForm")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/upload_resume", true);
+                xhr.onload = function () {
+                    var response = JSON.parse(xhr.responseText);
+                    var flashMessages = document.getElementById("flashMessages");
+                    flashMessages.style.display = "block";
+                    flashMessages.innerHTML = response.message;
+                    if (response.status === "success") {
+                        flashMessages.className = "flash-messages";
+                    } else {
+                        flashMessages.className = "error-message";
+                    }
+                };
+                xhr.send(formData);
+            });
+
+        document
+            .getElementById("sendEmailsForm")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
+                var formData = new FormData();
+                formData.append(
+                    "user_fullname",
+                    document.getElementById("user_fullname").value
+                );
+                formData.append(
+                    "user_email",
+                    document.getElementById("user_email").value
+                );
+                formData.append(
+                    "user_password",
+                    document.getElementById("user_password").value
+                );
+                formData.append(
+                    "email_subject",
+                    document.getElementById("email_subject").value
+                );
+                formData.append(
+                    "csv_file",
+                    document.getElementById("csv_file").files[0]
+                );
+                formData.append(
+                    "resume_file",
+                    document.getElementById("resume_file").files[0]
+                );
+                formData.append("degree", document.getElementById("degree").value);
+                formData.append("major", document.getElementById("major").value);
+                formData.append(
+                    "job_role",
+                    document.getElementById("job_role").value
+                );
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/send_emails", true);
+                xhr.onload = function () {
+                    var response = JSON.parse(xhr.responseText);
+                    var flashMessages = document.getElementById("flashMessages");
+                    flashMessages.style.display = "block";
+                    flashMessages.innerHTML = response.message;
+                    if (response.status === "success") {
+                        flashMessages.className = "flash-messages";
+                    } else {
+                        flashMessages.className = "error-message";
+                    }
+                };
+                xhr.send(formData);
+            });
+        document.querySelectorAll(".file-input").forEach(function (input) {
+            input.addEventListener("input", function () {
+                var label = this.nextElementSibling;
+                var fileName = this.files[0].name;
+                var maxLength = 15; // adjust this value to change the maximum length
+                if (fileName.length > maxLength) {
+                    var truncatedFileName =
+                        fileName.substring(0, maxLength - 3) + "...";
+                    label.textContent = truncatedFileName;
+                } else {
+                    label.textContent = fileName;
+                }
+                this.value = fileName;
+            });
+        });
+
+        // document.querySelectorAll('.custom-file-label').forEach(function (label) {
+        //     label.addEventListener('click', function () {
+        //         var input = this.previousElementSibling;
+        //         if (!input.selected) {
+        //             input.click();
+        //             input.selected = true;
+        //         }
+        //     });
+        // });
+    </script>
+</body>
+
+</html>
