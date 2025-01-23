@@ -20,13 +20,9 @@ import uuid
 # Load environment variables from .env file
 load_dotenv()
 
-# Verify the environment variables
-print("GOOGLE_APPLICATION_CREDENTIALS:", os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
-print("GCS_BUCKET_NAME:", os.environ.get('GCS_BUCKET_NAME'))
-print("SECRET_KEY:", os.environ.get('SECRET_KEY'))
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')  # Use environment variable for secret key
+# app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')  # Use environment variable for secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -185,8 +181,8 @@ def upload_resume():
 @app.route('/send_emails', methods=['POST'])
 @login_required
 def send_emails():
-    if current_user.email_count >= 2 and not current_user.is_plus:
-        flash('Upgrade to Plus to send more than 2 emails.')
+    if current_user.email_count >= 10 and not current_user.is_plus:
+        flash('Upgrade to Plus to send more than 10 emails.')
         return jsonify({'status': 'error', 'message': 'Upgrade to Plus to send more than 2 emails.'})
 
     csv_file_url = session.get('csv_file_url')
