@@ -1,0 +1,5 @@
+.env
+auto-emailer-22-1e2ca1c6631c.json
+venv/
+*.pyc
+__pycache__/
