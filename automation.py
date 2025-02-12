@@ -11,7 +11,7 @@ import requests
 from google.cloud import storage
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-import stripe
+# import stripe
 import base64
 import json
 from dotenv import load_dotenv
@@ -22,7 +22,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
-# app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')  # Use environment variable for secret key
+app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
