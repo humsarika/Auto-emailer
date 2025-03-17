@@ -181,9 +181,9 @@ def upload_resume():
 @app.route('/send_emails', methods=['POST'])
 @login_required
 def send_emails():
-    if current_user.email_count >= 10 and not current_user.is_plus:
-        flash('Upgrade to Plus to send more than 10 emails.')
-        return jsonify({'status': 'error', 'message': 'Upgrade to Plus to send more than 2 emails.'})
+    # if current_user.email_count >= 10 and not current_user.is_plus:
+    #     flash('Upgrade to Plus to send more than 10 emails.')
+    #     return jsonify({'status': 'error', 'message': 'Upgrade to Plus to send more than 2 emails.'})
 
     csv_file_url = session.get('csv_file_url')
     resume_file_url = session.get('resume_file_url')
