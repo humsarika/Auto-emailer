@@ -242,7 +242,7 @@ def send_emails():
             # Call send_email with recipient data and resume_filename
             send_email(user_fullname, user_email, user_password, email_subject, hr_firstname, hr_email, company, resume_file_url, degree, major, job_role)
         # current_user.email_count += 1
-        db.session.commit()
+        # db.session.commit()
         flash('Hurray! Emails sent successfully! I wish you luck in your job search.')
         
         # Delete the files from Google Cloud Storage
