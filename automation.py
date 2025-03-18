@@ -9,26 +9,49 @@ import logging
 import os
 import requests
 from google.cloud import storage
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-# import stripe
+from dotenv import load_dotenv
 import base64
 import json
-from dotenv import load_dotenv
-import uuid
+from pymongo import MongoClient  
+from werkzeug.security import generate_password_hash, check_password_hash
+from bson.objectid import ObjectId
+from db import db
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
-
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')  
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')
 
-db = SQLAlchemy(app)
+# Configure MongoDB connection
+mongo_uri = os.environ.get("MONGO_URI")
+client = MongoClient(mongo_uri)
+db = client.get_database("job_portal")  # Change the database name as needed
+users_collection = db["users"]
+
+# Flask-Login setup
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+users_collection = db["users"]  # Define users collection
+
+@login_manager.user_loader
+def load_user(user_id):
+    logging.info(f"User ID: {user_id}")
+    user_data = users_collection.find_one({"_id": ObjectId(user_id)})
+    return User(user_data) if user_data else None
+
+class User(UserMixin):
+    def __init__(self, user_data):
+        self.id = str(user_data["_id"])  # Convert ObjectId to string
+        self.username = user_data.get("username")
+        self.email = user_data.get("email")
+        self.password = user_data.get("password")
+
+    def is_authenticated(self):
+        return True
+        
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -45,18 +68,6 @@ storage_client = storage.Client.from_service_account_info(service_account_info)
 bucket_name = os.environ.get('GCS_BUCKET_NAME')
 bucket = storage_client.bucket(bucket_name)
 
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-    email_count = db.Column(db.Integer, default=0)
-    is_plus = db.Column(db.Boolean, default=False)
-
-@login_manager.user_loader
-def load_user(user_id):
-    logging.info(f"User ID: {user_id}")
-    return User.query.get(int(user_id))
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -111,33 +122,52 @@ Sincerely,
         logging.error(f"Failed to send email to {hr_email}: {e}")
         raise
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user = User.query.filter_by(email=email).first()
-        if user and user.password == password:
-            login_user(user)
-            return redirect(url_for('index'))
-        flash('Invalid credentials')
-    return render_template('login.html')
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
 
-@app.route('/register', methods=['GET', 'POST'])
+        user = users_collection.find_one({"email": email})
+
+        if user and check_password_hash(user["password"], password):
+            user_obj = User(user)  # Create User object
+            login_user(user_obj)  # Log in user
+            flash("Logged in successfully!", "success")
+            return redirect(url_for("index"))
+            
+        else:
+            flash("Invalid email or password", "danger")
+
+    return render_template("login.html")
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        if User.query.filter_by(email=email).first():
-            flash('Email address already exists')
-            return redirect(url_for('register'))
-        new_user = User(username=username, email=email, password=password)
-        db.session.add(new_user)
-        db.session.commit()
-        login_user(new_user)
-        return redirect(url_for('index'))
-    return render_template('register.html')
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        # Check if email already exists
+        existing_user = users_collection.find_one({"email": email})
+        if existing_user:
+            flash("Email already exists. Try logging in!", "danger")
+            return redirect(url_for("register"))
+
+        # Hash the password before storing it
+        hashed_password = generate_password_hash(password)
+
+        # Insert into MongoDB
+        users_collection.insert_one({
+            "username": username,
+            "email": email,
+            "password": hashed_password
+        })
+
+        flash("Registered successfully! Please log in.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
 
 @app.route('/logout')
 @login_required
@@ -211,7 +241,7 @@ def send_emails():
             hr_firstname, hr_lastname, hr_email, company = row
             # Call send_email with recipient data and resume_filename
             send_email(user_fullname, user_email, user_password, email_subject, hr_firstname, hr_email, company, resume_file_url, degree, major, job_role)
-        current_user.email_count += 1
+        # current_user.email_count += 1
         db.session.commit()
         flash('Hurray! Emails sent successfully! I wish you luck in your job search.')
         
@@ -230,7 +260,5 @@ def send_emails():
         return jsonify({'status': 'error', 'message': f'Error processing files: {str(e)}'})
 
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+if __name__ == "__main__":
     app.run(debug=True)
