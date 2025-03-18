@@ -4,3 +4,4 @@ venv/
 *.pyc
 __pycache__/
 view_users.py
+node_modules/
