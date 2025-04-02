@@ -6,16 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Auto Emailer</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" />
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background: url(../static/background.png) no-repeat center center fixed;
-        }
-
-        h1 {
-            color: #333;
+            background: url("../static/images/background3.jpg") no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .main-container {
@@ -29,7 +29,7 @@
         }
 
         .form-top-container {
-            background: #d3be8e97;
+            background: #ffffff71;
             margin: 50px 250px;
             padding: 70px;
             border-radius: 15px;
@@ -123,7 +123,6 @@
         }
 
         .submit-button {
-            margin: auto;
             background-color: #0f0f0f;
             color: white;
             font-size: 1rem;
@@ -157,29 +156,28 @@
             color: #992b36;
         }
 
-        .privacy-notice {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
 
-        .privacy-notice h2 {
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        .privacy-notice p {
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
+    
     </style>
 </head>
 
 <body>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">Auto Emailer</div>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/">How It Works</a></li>
+          <li><a href="/contact">Contact</a></li>
+  
+          {% if logged_in %}
+          
+              <li><a href="/logout">Logout</a></li>
+          {% else %}
+              <li><a href="/login">Login</a></li>
+          {% endif %}
+        </ul>
+      </nav>
     <div class="main-container">
         <div>
             <h1>Send Your Bulk Emails to HRs</h1>
@@ -259,23 +257,7 @@
                 <input class="submit-button" type="submit" value="Send Emails" />
             </form>
         </div>
-        <div class="privacy-notice">
-            <h2>Privacy Notice</h2>
-            <p>
-                We take your privacy seriously. We do not store any of your personal
-                data, including your email address, password, or any other information
-                you provide to us.
-            </p>
-            <p>
-                When you use our application, we only use your email address and
-                password to send emails on your behalf. We do not retain any of this
-                information after the email has been sent.
-            </p>
-            <p>
-                If you have any concerns about your privacy, please contact us at
-                sarika.kush2212@gmail.com .
-            </p>
-        </div>
+        
 
         
     </div>

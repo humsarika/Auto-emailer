@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Emailer</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+
+
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav>
+      <div class="logo">Auto Emailer</div>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="#howitworks">How It Works</a></li>
+        <li><a href="/contact">Contact</a></li>
+
+        {% if logged_in %}
+            <li><a href="/logout">Logout</a></li>
+        {% else %}
+            <li><a href="/login">Login</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Your Job Hunt, Supercharged!</h1>
+      <p>
+        Knock on Every HR’s Door – Instantly! Upload your resume, send emails,
+        and accelerate your career.
+      </p>
+      <form action="/index" method="get">
+        <button type="submit" class="cta-btn">Get Started</button>
+      </form>
+      
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="howitworks">
+      <h1>How It Works</h1>
+      <div class="steps">
+        <div class="step">
+          <h2>1. Upload HR Details</h2>
+          <p>Prepare a CSV file with HR Name, Last Name, Email, and Company.</p>
+        </div>
+        <div class="step">
+          <h2>2. Attach Your Resume</h2>
+          <p>Upload your resume in <b>PDF format</b></p>
+        </div>
+        <div class="step">
+          <h2>3. Send Bulk Emails</h2>
+          <p>Our system will automatically send personalized emails to HRs.</p>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        Auto Emailer. All rights reserved.
+      </p>
+      <br>
+      <p><a href="/privacypolicy">Privacy Policy</a> | <a href="/terms">Terms of Service</a></p>
+      
+    </footer>
+  </body>
+</html>

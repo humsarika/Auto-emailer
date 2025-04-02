@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">Auto Emailer</div>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/#howitworks">How It Works</a></li>
+          <li><a href="/contact">Contact</a></li>
+  
+          {% if logged_in %}
+              <li><a href="/logout">Logout</a></li>
+          {% else %}
+              <li><a href="/login">Login</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+      <div class="privacy-notice">
+        <h2>Privacy Notice</h2>
+        <p>
+            We take your privacy seriously. We do not store any of your personal
+            data, including your email address, password, or any other information
+            you provide to us.
+        </p>
+        <p>
+            When you use our application, we only use your email address and
+            password to send emails on your behalf. We do not retain any of this
+            information after the email has been sent.
+        </p>
+        <p>
+            If you have any concerns about your privacy, please contact us at
+            sarika.kush2212@gmail.com .
+        </p>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <p>
+          &copy;
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+          Auto Emailer. All rights reserved.
+        </p>
+        <br>
+        <p><a href="/privacypolicy">Privacy Policy</a> | <a href="/terms">Terms of Service</a></p>
+        
+      </footer>
+
+    
+</body>
+</html>
+

@@ -27,7 +27,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')
 # Configure MongoDB connection
 mongo_uri = os.environ.get("MONGO_URI")
 client = MongoClient(mongo_uri)
-db = client.get_database("job_portal")  # Change the database name as needed
+db = client.get_database("auto_emailer")  # Change the database name as needed
 users_collection = db["users"]
 
 # Flask-Login setup
@@ -79,9 +79,10 @@ def upload_file_to_gcs(file, bucket_name, folder_name):
         blob.upload_from_file(file, content_type=file.content_type)
         logging.info(f"File {file.filename} uploaded to {folder_name}/{file.filename}")
         return blob.public_url
+    
     except Exception as e:
         logging.error(f"Failed to upload file to GCS: {e}")
-        return None
+        return "❌ File upload failed. Please try again later."
 
 def send_email(user_fullname, user_email, user_password, email_subject, hr_firstname, hr_email, company, resume_file_url, degree, major, job_role):
     try:
@@ -118,12 +119,17 @@ Sincerely,
             server.login(user_email, user_password)
             server.sendmail(user_email, hr_email, message.as_string())
         logging.info(f"Email sent to {hr_email}")
+
+    except smtplib.SMTPAuthenticationError:
+        logging.error("❌ Incorrect email or password.")
+        return "❌ Your email/password for sending emails is incorrect."
     except Exception as e:
         logging.error(f"Failed to send email to {hr_email}: {e}")
-        raise
+        return "❌ Something went wrong. Please try again later."
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
@@ -134,7 +140,9 @@ def login():
             user_obj = User(user)  # Create User object
             login_user(user_obj)  # Log in user
             flash("Logged in successfully!", "success")
-            return redirect(url_for("index"))
+            print(f"User ID: {user_obj.id}")  # Debugging line
+            print("User logged in:", user_obj.username)  # Debugging line
+            return redirect(url_for("upload"))
             
         else:
             flash("Invalid email or password", "danger")
@@ -173,12 +181,23 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/')
-@login_required
-def index():
-    return render_template('upload.html')
+def home():
+    logged_in = "user_id" in session
+    return render_template('home.html', logged_in=logged_in)
+
+
+@app.route('/index')
+def upload():
+    logged_in = "user_id" in session
+    return render_template('upload.html', logged_in=logged_in)
+
+@app.route('/contact')
+def contact():
+    logged_in = "user_id" in session
+    return render_template('contact.html', logged_in=logged_in)
 
 @app.route('/upload_csv', methods=['POST'])
 @login_required
@@ -258,6 +277,33 @@ def send_emails():
         logging.error(f"Error processing files: {e}")
         flash(f'OOPS! Error processing files: {str(e)}')
         return jsonify({'status': 'error', 'message': f'Error processing files: {str(e)}'})
+
+def delete_file_from_gcs(bucket_name, file_path):
+    """Deletes a file from Google Cloud Storage, but prevents 404 errors."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(file_path)
+
+    try:
+        blob.delete()
+        return {"success": True, "message": "✅ File deleted successfully!"}
+
+    except NotFound:
+        return {"success": False, "message": "⚠️ File not found. It may have been deleted already."}
+
+    except Exception as e:
+        return {"success": False, "message": f"❌ An error occurred: {str(e)}"}
+
+@app.route("/test_session")
+def test_session():
+    session["user_id"] = "123"
+    return redirect(url_for("home"))
+
+@app.route("/check_session")
+def check_session():
+    return redirect(url_for("home"))
+
+
 
 
 if __name__ == "__main__":
