@@ -359,7 +359,7 @@
             input.addEventListener("input", function () {
                 var label = this.nextElementSibling;
                 var fileName = this.files[0].name;
-                var maxLength = 15; // adjust this value to change the maximum length
+                var maxLength = 15; 
                 if (fileName.length > maxLength) {
                     var truncatedFileName =
                         fileName.substring(0, maxLength - 3) + "...";
