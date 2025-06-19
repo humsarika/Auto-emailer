@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/style.css') }}"
+    />
+  </head>
+  <body>
+    <nav>
+      <div class="logo">Auto Emailer</div>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/#howitworks">How It Works</a></li>
+        <li><a href="/contact">Contact</a></li>
+
+        {% if logged_in %}
+        <li><a href="/logout">Logout</a></li>
+        {% else %}
+        <li><a href="/login">Login</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div class="terms-container">
+      <h1>Terms of Service</h1>
+      <p>
+        By accessing or using this website and its services (Auto Emailer), you
+        acknowledge and agree to be bound by the following Terms of Service. If
+        you do not agree with any part of these terms, please do not use this
+        site.
+      </p>
+
+      <h2>1. Use of Site</h2>
+      <p>
+        You are permitted to use this site for personal, non-commercial, and
+        lawful purposes only. You agree not to misuse, harm, or interfere with
+        the website, services, server, or network in any way. Any unauthorized
+        or malicious activities such as spamming, hacking, or reverse
+        engineering are strictly prohibited.
+      </p>
+
+      <h2>2. Intellectual Property</h2>
+      <p>
+        All content, designs, logos, text, images, and software displayed or
+        used on this site are the property of <strong>Auto Emailer</strong> and
+        are protected by intellectual property laws. You may not copy,
+        reproduce, distribute, or modify any part of this website without prior
+        written consent.
+      </p>
+
+      <h2>3. Termination</h2>
+      <p>
+        We reserve the right to terminate, suspend, or restrict your access to
+        the website at any time without notice if you violate these Terms or
+        engage in any harmful, fraudulent, or abusive behavior. Misuse of the
+        platform for spam, fake emails, or bulk unsolicited messages will also
+        lead to immediate account termination.
+      </p>
+
+      <h2>4. Limitation of Liability</h2>
+      <p>
+        Auto Emailer is provided "as is" without warranties of any kind, either
+        express or implied. We do not guarantee that the service will be
+        error-free or uninterrupted. Under no circumstances shall we be liable
+        for any indirect, incidental, or consequential damages arising from your
+        use of this service.
+      </p>
+
+      <h2>5. Third-Party Services</h2>
+      <p>
+        Our site may integrate with third-party services like Google Cloud,
+        MongoDB Atlas, and SMTP servers. We are not responsible for any issues,
+        data loss, or breaches that occur due to third-party services.
+      </p>
+
+      <h2>6. Changes to Terms</h2>
+      <p>
+        We may update these Terms of Service at any time. Any changes will be
+        posted on this page. Continued use of the site after such updates
+        constitutes your acceptance of the new terms.
+      </p>
+
+      <h2>7. Contact Us</h2>
+      <p>
+        If you have any questions or concerns about these Terms, please feel
+        free to contact us through our <a href="/contact">Contact Page</a>.
+      </p>
+    </div>
+    <footer>
+      <p>
+        &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        Auto Emailer. All rights reserved.
+      </p>
+      <br />
+      <p>
+        <a href="/privacypolicy">Privacy Policy</a> |
+        <a href="/terms">Terms of Service</a>
+      </p>
+    </footer>
+  </body>
+</html>

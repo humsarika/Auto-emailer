@@ -3,6 +3,7 @@ import logging
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
+import gridfs
 
 # Load environment variables
 load_dotenv()
@@ -18,6 +19,8 @@ if not uri:
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client["auto_emailer"]
+fs = gridfs.GridFS(db)   # Yeh define karo
+
 
 # Ping MongoDB to check connection
 try:
@@ -25,7 +28,12 @@ try:
     logging.info("Connected to MongoDB Atlas successfully!")
 except Exception as e:
     logging.error(f"MongoDB connection error: {e}")
+    raise ConnectionError("Failed to connect to MongoDB Atlas.")
+
 
 # Function to get the database
 def get_database():
     return db
+
+def get_file_system():
+    return fs

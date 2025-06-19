@@ -16,7 +16,9 @@ import json
 from pymongo import MongoClient  
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson.objectid import ObjectId
-from db import db
+# from db import db
+from db import get_database, get_file_system
+
 
 # Load environment variables
 load_dotenv()
@@ -29,6 +31,7 @@ mongo_uri = os.environ.get("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client.get_database("auto_emailer")  # Change the database name as needed
 users_collection = db["users"]
+fs = get_file_system()
 
 # Flask-Login setup
 login_manager = LoginManager(app)
@@ -56,35 +59,44 @@ class User(UserMixin):
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Decode the service account key file from the environment variable
-google_credentials = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-# Add padding if necessary
-missing_padding = len(google_credentials) % 4
-if missing_padding:
-    google_credentials += '=' * (4 - missing_padding)
+# # Decode the service account key file from the environment variable
+# google_credentials = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+# # Add padding if necessary
+# missing_padding = len(google_credentials) % 4
+# if missing_padding:
+#     google_credentials += '=' * (4 - missing_padding)
 
-service_account_info = json.loads(base64.b64decode(google_credentials))
-storage_client = storage.Client.from_service_account_info(service_account_info)
-bucket_name = os.environ.get('GCS_BUCKET_NAME')
-bucket = storage_client.bucket(bucket_name)
+# service_account_info = json.loads(base64.b64decode(google_credentials))
+# storage_client = storage.Client.from_service_account_info(service_account_info)
+# bucket_name = os.environ.get('GCS_BUCKET_NAME')
+# bucket = storage_client.bucket(bucket_name)
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in {'csv', 'pdf'}
 
-def upload_file_to_gcs(file, bucket_name, folder_name):
-    try:
-        blob = bucket.blob(f"{folder_name}/{file.filename}")
-        blob.upload_from_file(file, content_type=file.content_type)
-        logging.info(f"File {file.filename} uploaded to {folder_name}/{file.filename}")
-        return blob.public_url
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+     if request.path.startswith('/upload_csv') or request.is_json:
+        return jsonify({'status': 'error', 'message': 'Unauthorized. Please login.'}), 401
+     elif request.path.startswith('/upload_resume'):
+        return jsonify({'status': 'error', 'message': 'Unauthorized. Please login.'}), 401
+     else:
+        return redirect(url_for('login'))
     
-    except Exception as e:
-        logging.error(f"Failed to upload file to GCS: {e}")
-        return "❌ File upload failed. Please try again later."
 
-def send_email(user_fullname, user_email, user_password, email_subject, hr_firstname, hr_email, company, resume_file_url, degree, major, job_role):
+def upload_file_to_gridfs(file, file_type):
+    try:
+        file_id = fs.put(file, filename=file.filename, content_type=file.content_type, metadata={"type": file_type})
+        logging.info(f"File {file.filename} uploaded to GridFS with id: {file_id}")
+        return str(file_id)  # Convert ObjectId to string
+    except Exception as e:
+        logging.error(f"Failed to upload file to GridFS: {e}")
+        return None
+
+
+def send_email_with_file(user_fullname, user_email, user_password, email_subject, hr_firstname, hr_email, company, resume_bytes, degree, major, job_role, resume_filename):
     try:
         message = MIMEMultipart("alternative")
         personalized_text = f"""
@@ -106,26 +118,19 @@ Sincerely,
         message['From'] = user_fullname
         message['To'] = hr_email
 
-        # Attach resume from the URL
-        resume_response = requests.get(resume_file_url)
-        resume_filename = resume_file_url.split('/')[-1]
-        attach_resume = MIMEApplication(resume_response.content, Name=resume_filename)
+        # Attach resume directly
+        attach_resume = MIMEApplication(resume_bytes, Name=resume_filename)
         attach_resume['Content-Disposition'] = f'attachment; filename="{resume_filename}"'
         message.attach(attach_resume)
 
-        # Send email using SMTP server
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             server.login(user_email, user_password)
             server.sendmail(user_email, hr_email, message.as_string())
         logging.info(f"Email sent to {hr_email}")
 
-    except smtplib.SMTPAuthenticationError:
-        logging.error("❌ Incorrect email or password.")
-        return "❌ Your email/password for sending emails is incorrect."
     except Exception as e:
-        logging.error(f"Failed to send email to {hr_email}: {e}")
-        return "❌ Something went wrong. Please try again later."
+        logging.error(f"Failed to send email: {e}")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -185,51 +190,105 @@ def logout():
 
 @app.route('/')
 def home():
-    logged_in = "user_id" in session
+    logged_in = current_user.is_authenticated
     return render_template('home.html', logged_in=logged_in)
-
 
 @app.route('/index')
 def upload():
-    logged_in = "user_id" in session
+    logged_in = current_user.is_authenticated
     return render_template('upload.html', logged_in=logged_in)
 
 @app.route('/contact')
 def contact():
-    logged_in = "user_id" in session
+    logged_in = current_user.is_authenticated
     return render_template('contact.html', logged_in=logged_in)
 
 @app.route('/upload_csv', methods=['POST'])
 @login_required
 def upload_csv():
-    if 'csv_file' in request.files:
-        csv_file = request.files['csv_file']
-        if csv_file and allowed_file(csv_file.filename):
-            csv_file_url = upload_file_to_gcs(csv_file, bucket_name, 'csv_files')
-            if csv_file_url:
-                session['csv_file_url'] = csv_file_url
-                flash('CSV file uploaded successfully!')
-                return jsonify({'status': 'success', 'message': 'CSV file uploaded successfully!'})
-    flash('Failed to upload CSV file.')
-    return jsonify({'status': 'error', 'message': 'Failed to upload CSV file.'})
+    if 'csv_file' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No CSV file provided.'}), 400
+
+    csv_file = request.files['csv_file']
+    if csv_file and allowed_file(csv_file.filename):
+        csv_file_id = upload_file_to_gridfs(csv_file, 'csv')
+        if csv_file_id:
+            session['csv_file_id'] = csv_file_id
+            return jsonify({'status': 'success', 'message': 'CSV file uploaded successfully!'}), 200
+        else:
+            # Backend detailed error goes to logs only
+            logging.error('CSV file upload to GridFS failed.')
+            return jsonify({'status': 'error', 'message': 'Failed to upload CSV. Please try again later.'}), 500
+
+    return jsonify({'status': 'error', 'message': 'Invalid file type. Only CSV allowed.'}), 400
 
 @app.route('/upload_resume', methods=['POST'])
 @login_required
 def upload_resume():
-    if 'resume_file' in request.files:
-        resume_file = request.files['resume_file']
-        if resume_file and allowed_file(resume_file.filename):
-            resume_file_url = upload_file_to_gcs(resume_file, bucket_name, 'resume_files')
-            if resume_file_url:
-                session['resume_file_url'] = resume_file_url
-                flash('Resume file uploaded successfully!')
-                return jsonify({'status': 'success', 'message': 'Resume file uploaded successfully!'})
-    flash('Failed to upload resume file.')
-    return jsonify({'status': 'error', 'message': 'Failed to upload resume file.'})
+    if 'resume_file' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No resume file provided.'}), 400
+
+    resume_file = request.files['resume_file']
+    if resume_file and allowed_file(resume_file.filename):
+        resume_file_id = upload_file_to_gridfs(resume_file, 'resume')
+        if resume_file_id:
+            session['resume_file_id'] = resume_file_id
+            return jsonify({'status': 'success', 'message': 'Resume uploaded successfully!'}), 200
+        else:
+            logging.error('Resume file upload to GridFS failed.')
+            return jsonify({'status': 'error', 'message': 'Failed to upload resume. Try again later.'}), 500
+
+    return jsonify({'status': 'error', 'message': 'Invalid file type. Only PDF allowed.'}), 400
+
 
 @app.route('/send_emails', methods=['POST'])
 @login_required
 def send_emails():
+    csv_file_id = session.get('csv_file_id')
+    resume_file_id = session.get('resume_file_id')
+    user_fullname = request.form.get('user_fullname')
+    user_email = request.form.get('user_email')
+    user_password = request.form.get('user_password')
+    email_subject = request.form.get('email_subject')
+    degree = request.form.get('degree')
+    major = request.form.get('major')
+    job_role = request.form.get('job_role')
+
+    if not csv_file_id or not resume_file_id or not user_fullname or not user_email or not user_password or not email_subject or not degree or not major or not job_role:
+        flash('All fields are required.')
+        return jsonify({'status': 'error', 'message': 'Please ensure all fields are filled before sending emails.'})
+
+    try:
+        # Get CSV from GridFS
+        csv_file = fs.get(ObjectId(csv_file_id))
+        csv_content = csv_file.read().decode('utf-8').splitlines()
+        reader = csv.reader(csv_content)
+        next(reader)  # Skip header row if any
+
+        # Get Resume file from GridFS
+        resume_file = fs.get(ObjectId(resume_file_id))
+        resume_bytes = resume_file.read()
+
+        for row in reader:
+            hr_firstname, hr_lastname, hr_email, company = row
+            # Send each email with resume file (from bytes)
+            send_email_with_file(user_fullname, user_email, user_password, email_subject,
+                                 hr_firstname, hr_email, company, resume_bytes,
+                                 degree, major, job_role, resume_file.filename)
+
+        flash('Hurray! Emails sent successfully! Best of luck!')
+        session.pop('csv_file_id', None)
+        session.pop('resume_file_id', None)
+        return jsonify({'status': 'success', 'message': 'Emails sent successfully!'})
+    except Exception as e:
+        logging.error(f"Error processing files: {e}")
+        flash(f'OOPS! Error processing files:')
+        return jsonify({'status': 'error', 'message': f'Error processing files'})
+
+
+# @app.route('/send_emails', methods=['POST'])
+# @login_required
+# def send_emails():
     # if current_user.email_count >= 10 and not current_user.is_plus:
     #     flash('Upgrade to Plus to send more than 10 emails.')
     #     return jsonify({'status': 'error', 'message': 'Upgrade to Plus to send more than 2 emails.'})
@@ -293,6 +352,15 @@ def delete_file_from_gcs(bucket_name, file_path):
 
     except Exception as e:
         return {"success": False, "message": f"❌ An error occurred: {str(e)}"}
+
+@app.route('/privacypolicy')
+def privacy_policy():
+    return render_template('privacypolicy.html')
+
+@app.route('/terms')
+def terms_of_service():
+    return render_template('terms.html')
+
 
 @app.route("/test_session")
 def test_session():

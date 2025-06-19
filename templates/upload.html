@@ -6,178 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Auto Emailer</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/upload.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" />
-    <style>
-        body {
-            margin: 0;
-            background: url("../static/images/background3.jpg") no-repeat center center;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .main-container {
-            margin: 0 auto;
-            max-width: auto;
-            padding: 20px;
-            justify-content: center;
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-top-container {
-            background: #ffffff71;
-            margin: 50px 250px;
-            padding: 70px;
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.237);
-            margin-bottom: 20px;
-            /* justify-content: center;
-            align-items: center;
-            display: flex;
-            flex-direction: column; */
-        }
-
-        .form-container {
-            padding: 10px;
-            margin: auto;
-            justify-content: space-between;
-            align-items: center;
-            display: flex;
-            flex-direction: row;
-        }
-
-        .details-top-container {
-            padding: 10px;
-            margin: auto;
-            justify-content: center;
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .details-top-container input[type="text"],
-        .details-top-container input[type="email"],
-        .details-top-container input[type="password"] {
-            width: 80%;
-            height: 20px;
-            margin-bottom: 20px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .personal-details-container {
-            margin: 10px;
-            justify-content: center;
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-        }
-        .row-flex-container{
-            margin: 10px;
-            justify-content: space-around;
-            align-items: center;
-            display: flex;
-            flex-direction: row;
-        }
-
-        label {
-            margin-bottom: 10px;
-        }
-
-        .file-input-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .file-input {
-            display: none;
-            visibility: hidden;
-        }
-
-        .custom-file-label {
-            background: transparent;
-            color: rgb(72, 72, 72);
-            padding: 8px 15px;
-            border: 1px solid #000000;
-            border-radius: 5px;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .custom-file-label:hover {
-            background-color: #d7d7d7;
-        }
-
-        .button {
-            background-color: #368738;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .submit-button {
-            background-color: #0f0f0f;
-            color: white;
-            font-size: 1rem;
-            padding: 20px 50px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background-color: #67b96b;
-        }
-
-        .submit-button:hover {
-            background-color: #585858;
-        }
-
-        .flash-messages {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .error-message {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #f8d7da;
-            color: #992b36;
-        }
-
-
-    
-    </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav>
-        <div class="logo">Auto Emailer</div>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/">How It Works</a></li>
-          <li><a href="/contact">Contact</a></li>
-  
-          {% if logged_in %}
-          
-              <li><a href="/logout">Logout</a></li>
-          {% else %}
-              <li><a href="/login">Login</a></li>
-          {% endif %}
-        </ul>
-      </nav>
+   <nav>
+      <div class="logo">Auto Emailer</div>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/#howitworks">How It Works</a></li>
+        <li><a href="/contact">Contact</a></li>
+
+        {% if logged_in %}
+            <li><a href="/logout">Logout</a></li>
+        {% else %}
+            <li><a href="/login">Login</a></li>
+        {% endif %}
+      </ul>
+    </nav>
     <div class="main-container">
         <div>
             <h1>Send Your Bulk Emails to HRs</h1>
@@ -257,10 +104,20 @@
                 <input class="submit-button" type="submit" value="Send Emails" />
             </form>
         </div>
-        
-
-        
     </div>
+<footer>
+      <p>
+        &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        Auto Emailer. All rights reserved.
+      </p>
+      <br>
+      <p><a href="/privacypolicy">Privacy Policy</a> | <a href="/terms">Terms of Service</a> | <a href="/contact">Contact</a></p>
+      
+    </footer>
+
     <script>
         document
             .getElementById("uploadCsvForm")

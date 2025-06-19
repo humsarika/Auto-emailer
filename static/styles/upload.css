@@ -1,0 +1,194 @@
+body {
+            margin: 0;
+            padding: 0;
+            background: url("../images/background3.jpg") no-repeat center center;
+            background-size: cover;
+            /* display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; */
+        }
+
+        .main-container {
+            margin: 0 auto;
+            max-width: auto;
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-top-container {
+            background: #ffffff71;
+            margin: 50px 250px;
+            padding: 70px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.237);
+            margin-bottom: 20px;
+            /* justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column; */
+        }
+
+        .form-container {
+            padding: 10px;
+            margin: auto;
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .details-top-container {
+            padding: 10px;
+            margin: auto;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .details-top-container input[type="text"],
+        .details-top-container input[type="email"],
+        .details-top-container input[type="password"] {
+            width: 80%;
+            height: 20px;
+            margin-bottom: 20px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .personal-details-container {
+            margin: 10px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .row-flex-container{
+            margin: 10px;
+            justify-content: space-around;
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+        }
+
+        label {
+            margin-bottom: 10px;
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            display: none;
+            visibility: hidden;
+        }
+
+        .custom-file-label {
+            background: transparent;
+            color: rgb(72, 72, 72);
+            padding: 8px 15px;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .custom-file-label:hover {
+            background-color: #d7d7d7;
+        }
+
+        .button {
+            background-color: #368738;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background-color: #0f0f0f;
+            color: white;
+            font-size: 1rem;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #67b96b;
+        }
+
+        .submit-button:hover {
+            background-color: #585858;
+        }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8d7da;
+            color: #992b36;
+        }
+
+/* ----------- RESPONSIVE ---------- */
+
+/* Tablets (up to 992px) */
+@media (max-width: 992px) {
+    .form-top-container {
+        margin: 30px 100px;
+        padding: 50px;
+    }
+
+    .form-container {
+        flex-direction: column; /* Stack items vertically */
+    }
+
+    .row-flex-container {
+        flex-direction: column;
+    }
+
+    .submit-button {
+        padding: 15px 40px;
+    }
+}
+
+/* Mobiles (up to 600px) */
+@media (max-width: 600px) {
+    .form-top-container {
+        margin: 20px 20px;
+        padding: 30px;
+    }
+
+    .details-top-container input[type="text"],
+    .details-top-container input[type="email"],
+    .details-top-container input[type="password"] {
+        width: 100%;
+    }
+
+    .submit-button {
+        padding: 12px 30px;
+        font-size: 0.9rem;
+    }
+
+    .custom-file-label {
+        width: 100%;
+        text-align: center;
+    }
+}
