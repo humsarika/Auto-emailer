@@ -16,20 +16,21 @@
   </head>
   <body>
     <!-- Navbar: sab page pe same -->
-    <nav>
-      <div class="logo">Auto Emailer</div>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/#howitworks">How It Works</a></li>
-        <li><a href="/contact">Contact</a></li>
+<nav>
+  <div class="logo">Auto Emailer</div>
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+  <ul id="menu">
+    <li><a href="/">Home</a></li>
+    <li><a href="/#howitworks">How It Works</a></li>
+    <li><a href="/contact">Contact</a></li>
+    {% if logged_in %}
+    <li><a href="/logout">Logout</a></li>
+    {% else %}
+    <li><a href="/login">Login</a></li>
+    {% endif %}
+  </ul>
+</nav>
 
-        {% if logged_in %}
-        <li><a href="/logout">Logout</a></li>
-        {% else %}
-        <li><a href="/login">Login</a></li>
-        {% endif %}
-      </ul>
-    </nav>
 
     <!-- custom block -->
     {% block content %}{% endblock %}
@@ -49,7 +50,12 @@
         <a href="/terms">Terms of Service</a>
       </p>
     </footer>
-
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('show');
+  }
+</script>
   
 
   </body>

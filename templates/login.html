@@ -1,74 +1,9 @@
+{% extends "base.html" %}
 
-</html>
+{% block title %} Auto Emailer{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Auto Emailer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-</head>
-<!-- <style>
-     * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        body {
-            background: url("../static/images/background3.jpg") no-repeat center center fixed;
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 300px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #786145;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        button:hover {
-            background-color: #503d24;
-        }
-        p {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        a {
-            color: #786145;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-</style> -->
+{% block content %}
+     
 <body>
     <div class="auth-container">
         <div class="login-register-container">
@@ -86,5 +21,4 @@
 
 
 </body>
-
-</html>
+ {% endblock %}

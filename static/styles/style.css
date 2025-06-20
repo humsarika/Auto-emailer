@@ -11,22 +11,22 @@ body {
   text-align: center;
 }
 
-/* Navbar */
+/* Navbar Styling */
 nav {
-  position: sticky;
   display: flex;
-  justify-content: space-around;
-  top: 0;
-  width: 100%;
+  justify-content: space-between;
   align-items: center;
-  padding: 15px 0px;
-  background: black;
-  color: white;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  background-color: #000000;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* stays above everything else */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.logo {
-  font-size: 24px;
+nav .logo {
+  color: #fff;
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
@@ -36,25 +36,27 @@ nav ul {
   gap: 20px;
 }
 
-nav ul li {
-  display: inline;
-}
-
 nav ul li a {
+  color: #fff;
   text-decoration: none;
-  color: white;
-  padding: 10px 15px;
-  font-size: 18px;
+  font-weight: 500;
 }
 
 nav ul li a:hover {
-  color: rgb(225, 160, 90);
+  text-decoration: underline;
+}
+
+/* Hamburger Icon hidden on big screens */
+.menu-toggle {
+  display: none;
+  font-size: 1.8rem;
+  color: #fff;
+  cursor: pointer;
 }
 
 input[type="text"],
 input[type="email"],
-input[type="password"]
- {
+input[type="password"] {
   width: 80%;
   padding: 10px;
   margin: 10px 0;
@@ -86,7 +88,7 @@ input[type="password"]
   color: white;
   border: 1px solid black;
   padding: 12px 24px;
-  font-size: 18px;
+  font-size: 1.5rem;
   cursor: pointer;
   border-radius: 5px;
 }
@@ -152,6 +154,7 @@ input[type="password"]
   text-align: center;
   width: 400px;
 }
+
 .auth-btn {
   width: 50%;
   padding: 10px;
@@ -166,6 +169,7 @@ input[type="password"]
 .auth-btn:hover {
   background: #393939;
 }
+
 /* Contact Section Main */
 .contact {
   background: #fff;
@@ -273,7 +277,7 @@ input[type="password"]
 
 /* Footer */
 footer {
- 
+
   background: black;
   height: 15vh;
   color: white;
@@ -285,15 +289,19 @@ footer {
 footer p {
   margin: 5px 0;
 }
-footer p a{
+
+footer p a {
   text-decoration: none;
   color: white;
 }
-footer p a:hover{
+
+footer p a:hover {
   color: rgb(225, 160, 90);
 }
+
 /* Privacy Policy & Terms Pages */
-.policy-container, .terms-container {
+.policy-container,
+.terms-container {
   max-width: 900px;
   margin: 50px auto;
   background: #fff;
@@ -306,46 +314,55 @@ footer p a:hover{
 
 }
 
-.policy-container h1, .terms-container h1 {
+.policy-container h1,
+.terms-container h1 {
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 20px;
   color: black;
 }
 
-.policy-container h2, .terms-container h2 {
+.policy-container h2,
+.terms-container h2 {
   font-size: 1.5rem;
   margin-top: 30px;
   color: #444;
 }
 
-.policy-container p, .terms-container p {
+.policy-container p,
+.terms-container p {
   margin: 15px 0;
   font-size: 1rem;
   color: #555;
 }
 
-.policy-container ul, .terms-container ul {
+.policy-container ul,
+.terms-container ul {
   padding-left: 20px;
 }
 
-.policy-container li, .terms-container li {
+.policy-container li,
+.terms-container li {
   margin-bottom: 10px;
   list-style-type: disc;
 }
 
 /* Responsive for Privacy & Terms */
 @media (max-width: 768px) {
-  .policy-container, .terms-container {
+
+  .policy-container,
+  .terms-container {
     padding: 20px;
     margin: 20px;
   }
 
-  .policy-container h1, .terms-container h1 {
+  .policy-container h1,
+  .terms-container h1 {
     font-size: 2rem;
   }
 
-  .policy-container h2, .terms-container h2 {
+  .policy-container h2,
+  .terms-container h2 {
     font-size: 1.5rem;
   }
 }
@@ -353,59 +370,77 @@ footer p a:hover{
 
 /* Global Responsive Adjustments */
 @media (max-width: 1024px) {
-    nav ul {
-        gap: 10px;
-    }
+  nav ul {
+    gap: 10px;
+  }
 
-    .hero h1 {
-        font-size: 3rem;
-    }
+  .hero h1 {
+    font-size: 3rem;
+  }
 
-    .cta-btn {
-        padding: 10px 20px;
-        font-size: 16px;
-    }
+  .cta-btn {
+    padding: 10px 20px;
 
-    .how-it-works {
-        height: auto;
-    }
+  }
+
+  .how-it-works {
+    height: auto;
+  }
 }
 
 @media (max-width: 768px) {
-    nav {
-        font-size: medium;
-    }
+  nav ul {
+    flex-direction: column;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 100%;
+    background-color: #000000;
+    display: none;
+    padding: 10px 0;
+  }
 
-    nav ul {
-        display: none;
-        visibility: hidden;
-    }
+  nav ul.show {
+    display: flex;
+  }
 
-    .hero {
-        height: auto;
-        padding: 40px 10px;
-    }
+  .menu-toggle {
+    display: block;
+  }
 
-    .hero h1 {
-        font-size: 2.5rem;
-    }
 
-    .cta-btn {
-        width: 80%;
-    }
+.hero {
+  /* height: auto; */
+  padding: 40px 10px;
+}
 
-    .how-it-works {
-        padding: 40px 10px;
-    }
+.hero h1 {
+  font-size: 3rem;
+}
+.hero p{
+  padding: 40px 30px;
+}
 
-    .steps {
-        flex-direction: column;
-        align-items: center;
-    }
+.cta-btn {
+  width: 100%;
+}
 
-    .step {
-        width: 80%;
-    }
+.how-it-works {
+  padding: 40px 10px;
+}
+.how-it-works h1{
+  font-size: 2rem;
+}
+
+.steps {
+  flex-direction: column;
+  align-items: center;
+}
+
+.step {
+  width: 80%;
+}
+
 /* 
     .contact {
         height: 100vh;
@@ -416,27 +451,28 @@ footer p a:hover{
         gap: 20px;
     } */
 
-    .login-register-container {
-        width: 90%;
-        padding: 15px;
-    }
+.login-register-container {
+  width: 80%;
+  padding: 15px;
+}
 }
 
 @media (max-width: 480px) {
 
-  .hero{
+  .hero {
     height: 100vh;
   }
-    .hero h1 {
-        font-size: 2rem;
-    }
 
-    .cta-btn {
-        font-size: 14px;
-        
-    }
+  .hero h1 {
+    font-size: 2rem;
+  }
 
-    /* .contact-form input,
+  .cta-btn {
+    font-size: 16px;
+
+  }
+
+  /* .contact-form input,
     .contact-form select,
     .contact-form textarea {
         padding: 8px;
@@ -448,7 +484,7 @@ footer p a:hover{
         font-size: 16px;
     } */
 
-    footer p {
-        font-size: 14px;
-    }
+  footer p {
+    font-size: 14px;
+  }
 }
