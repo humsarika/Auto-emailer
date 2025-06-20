@@ -1,29 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Terms of Service</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles/style.css') }}"
-    />
-  </head>
-  <body>
-    <nav>
-      <div class="logo">Auto Emailer</div>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/#howitworks">How It Works</a></li>
-        <li><a href="/contact">Contact</a></li>
+{% extends "base.html" %}
 
-        {% if logged_in %}
-        <li><a href="/logout">Logout</a></li>
-        {% else %}
-        <li><a href="/login">Login</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+{% block title %}Terms of Service | Auto Emailer{% endblock %}
+
+{% block content %}
     <div class="terms-container">
       <h1>Terms of Service</h1>
       <p>
@@ -89,19 +68,4 @@
         free to contact us through our <a href="/contact">Contact Page</a>.
       </p>
     </div>
-    <footer>
-      <p>
-        &copy;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        Auto Emailer. All rights reserved.
-      </p>
-      <br />
-      <p>
-        <a href="/privacypolicy">Privacy Policy</a> |
-        <a href="/terms">Terms of Service</a>
-      </p>
-    </footer>
-  </body>
-</html>
+   {% endblock %}

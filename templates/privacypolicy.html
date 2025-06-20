@@ -1,30 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Privacy Policy</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles/style.css') }}"
-    />
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav>
-      <div class="logo">Auto Emailer</div>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/#howitworks">How It Works</a></li>
-        <li><a href="/contact">Contact</a></li>
+{% extends "base.html" %}
 
-        {% if logged_in %}
-        <li><a href="/logout">Logout</a></li>
-        {% else %}
-        <li><a href="/login">Login</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+{% block title %}Privacy Policy | Auto Emailer{% endblock %}
+
+{% block content %}
     <div class="policy-container">
       <h1>Privacy Policy</h1>
       <p>
@@ -68,20 +46,4 @@
         security are our top priority.
       </p>
     </div>
-    <!-- Footer -->
-    <footer>
-      <p>
-        &copy;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        Auto Emailer. All rights reserved.
-      </p>
-      <br />
-      <p>
-        <a href="/privacypolicy">Privacy Policy</a> |
-        <a href="/terms">Terms of Service</a>
-      </p>
-    </footer>
-  </body>
-</html>
+     {% endblock %}

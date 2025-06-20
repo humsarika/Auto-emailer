@@ -98,7 +98,6 @@ input[type="password"]
 
 /* How It Works Section */
 .how-it-works {
-  height: 60vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -109,20 +108,21 @@ input[type="password"]
 }
 
 .how-it-works h1 {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 20px;
 }
 
 .steps {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   gap: 30px;
 }
 
 .step {
   background: #ffffff;
-  width: 250px;
+  min-width: 250px;
+  max-width: 1000px;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);

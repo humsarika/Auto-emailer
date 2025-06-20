@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | Auto Emailer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
 </head>
 <!-- <style>
@@ -73,14 +73,18 @@
     <div class="auth-container">
         <div class="login-register-container">
             <h2>Login</h2>
-        <form action="{{ url_for('login') }}" method="POST">
-            <input type="email" name="email" placeholder="Enter your email" required>
-            <input type="password" name="password" placeholder="Enter your password" required>
-            <button class="auth-btn" type="submit">Login</button>
-        </form>
-        <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+
+
+            <form action="{{ url_for('login') }}" method="POST">
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <input type="password" name="password" placeholder="Enter your password" required>
+                <button class="auth-btn" type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
         </div>
-        
     </div>
+
+
 </body>
+
 </html>

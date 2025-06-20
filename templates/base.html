@@ -1,0 +1,57 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Auto Emailer{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/upload.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navbar: sab page pe same -->
+    <nav>
+      <div class="logo">Auto Emailer</div>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/#howitworks">How It Works</a></li>
+        <li><a href="/contact">Contact</a></li>
+
+        {% if logged_in %}
+        <li><a href="/logout">Logout</a></li>
+        {% else %}
+        <li><a href="/login">Login</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <!-- custom block -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        Auto Emailer. All rights reserved.
+      </p>
+      <br />
+      <p>
+        <a href="/privacypolicy">Privacy Policy</a> |
+        <a href="/terms">Terms of Service</a>
+      </p>
+    </footer>
+
+  
+
+  </body>
+</html>
+

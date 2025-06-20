@@ -1,42 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auto Emailer</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/upload.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" />
-</head>
+{% block title %}Send Mails | Auto Emailer{% endblock %}
 
-<body>
-   <nav>
-      <div class="logo">Auto Emailer</div>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/#howitworks">How It Works</a></li>
-        <li><a href="/contact">Contact</a></li>
-
-        {% if logged_in %}
-            <li><a href="/logout">Logout</a></li>
-        {% else %}
-            <li><a href="/login">Login</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+{% block content %}
     <div class="main-container">
         <div>
             <h1>Send Your Bulk Emails to HRs</h1>
         </div>
-        <div class="header">
-            <p>Please upload your HR details in a CSV file.</p>
-            <p>
-                The CSV file should include the following columns in this order: HR
-                Name, HR Last Name, HR Email, and Company.
-            </p>
-            <p>Additionally, upload your resume in PDF format.</p>
-        </div>
+        <!-- <div class="header">
+            <p>make sure you are logged in</p>
+        </div> -->
 
         <div class="form-top-container">
             <div class="details-top-container">
@@ -56,8 +29,9 @@
                     </div>
 
                     <div>
-                        <label for="user_password">Email Password:</label>
-                    <input type="password" id="user_password" name="user_password" required />
+                        <label for="user_password">Your Gmail (App Password Required):</label><a href="/#howitworks" >Need help?</a>
+                        <input type="password" id="user_password" name="user_password" required>
+                        
                     </div>
 
                     <div>
@@ -105,18 +79,6 @@
             </form>
         </div>
     </div>
-<footer>
-      <p>
-        &copy;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        Auto Emailer. All rights reserved.
-      </p>
-      <br>
-      <p><a href="/privacypolicy">Privacy Policy</a> | <a href="/terms">Terms of Service</a> | <a href="/contact">Contact</a></p>
-      
-    </footer>
 
     <script>
         document
@@ -228,16 +190,6 @@
             });
         });
 
-        // document.querySelectorAll('.custom-file-label').forEach(function (label) {
-        //     label.addEventListener('click', function () {
-        //         var input = this.previousElementSibling;
-        //         if (!input.selected) {
-        //             input.click();
-        //             input.selected = true;
-        //         }
-        //     });
-        // });
     </script>
-</body
 
-</html>
+ {% endblock %}

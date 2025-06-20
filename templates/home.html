@@ -1,36 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auto Emailer</title>
-    <!-- styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+{% extends "base.html" %}
 
+{% block title %} Auto Emailer{% endblock %}
 
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav>
-      <div class="logo">Auto Emailer</div>
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="#howitworks">How It Works</a></li>
-        <li><a href="/contact">Contact</a></li>
-
-        {% if logged_in %}
-            <li><a href="/logout">Logout</a></li>
-        {% else %}
-            <li><a href="/login">Login</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+{% block content %}
 
     <!-- Hero Section -->
     <section class="hero">
       <h1>Your Job Hunt, Supercharged!</h1>
       <p>
-        Knock on Every HR’s Door – Instantly! Upload your resume, send emails,
+        Knock on Every HR's Door - Instantly! Upload your resume, send emails,
         and accelerate your career.
       </p>
       <form action="/index" method="get">
@@ -45,33 +23,34 @@
       <div class="steps">
         <div class="step">
           <h2>1. Upload HR Details</h2>
-          <p>Prepare a CSV file with HR Name, Last Name, Email, and Company.</p>
+          <p>Prepare an Excel or CSV file with these 4 columns:
+            <ul>
+              <li>HR First Name (e.g., John)</li>
+              <li>HR Last Name (e.g., Doe)</li>
+              <li>HR Email Address (e.g., john.doe@gmail.com)</li>
+              <li>Company Name (e.g., Google)</li>
+            </ul>
+
+            This helps us write personalized emails like:
+            <i>"Hello John, I'm interested in opportunities at Google..."</i>
+            Instead of sending boring bulk mail.</p>
         </div>
         <div class="step">
           <h2>2. Attach Your Resume</h2>
-          <p>Upload your resume in <b>PDF format</b></p>
+          <p>Upload your latest resume in PDF format — this file will automatically be attached to every email we send to the HRs you listed in the CSV.</b></p>
         </div>
         <div class="step">
           <h2>3. Send Bulk Emails</h2>
-          <p>Our system will automatically send personalized emails to HRs.</p>
+          <h3>Why do we ask for your Gmail & App Password?</h3>
+          <p>Because this tool sends emails from your own Gmail account, not from our servers. This makes it look like you <strong>personally sent the mail</strong>, not some marketing software.</p>
+          <h3>What's an App Password?</h3>
+          <p>Google blocks normal passwords from being used in apps like ours for security reasons. Instead, Google gives you an App Password, a one-time 16-digit key, for secure access.</p>
+
+          <p>Without an App Password, this tool can't send emails for you.</p>
+
+          📌 Still confused? No worries! Watch this 3-min guide:
+          <a href="https://youtu.be/hXiPshHn9Pw?si=3NQuDQ3IpfyADJ0c">How to generate an App Password? (Watch here)</a>
         </div>
       </div>
     </section>
-
-
-
-    <!-- Footer -->
-    <footer>
-      <p>
-        &copy;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        Auto Emailer. All rights reserved.
-      </p>
-      <br>
-      <p><a href="/privacypolicy">Privacy Policy</a> | <a href="/terms">Terms of Service</a> | <a href="/contact">Contact</a></p>
-      
-    </footer>
-  </body>
-</html>
+ {% endblock %}

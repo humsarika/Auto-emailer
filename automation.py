@@ -78,12 +78,10 @@ def allowed_file(filename):
 
 @login_manager.unauthorized_handler
 def unauthorized_callback():
-     if request.path.startswith('/upload_csv') or request.is_json:
-        return jsonify({'status': 'error', 'message': 'Unauthorized. Please login.'}), 401
-     elif request.path.startswith('/upload_resume'):
+     if request.path.startswith('/upload_csv') or request.path.startswith('/upload_resume') or request.path.startswith('/send_emails') or request.is_json:
         return jsonify({'status': 'error', 'message': 'Unauthorized. Please login.'}), 401
      else:
-        return redirect(url_for('login'))
+        return redirect(url_for('login'))  # Normal page request 
     
 
 def upload_file_to_gridfs(file, file_type):
@@ -134,6 +132,8 @@ Sincerely,
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:  # User already logged in
+        return redirect(url_for('home'))  # Send to home
     
     if request.method == "POST":
         email = request.form["email"]
@@ -156,6 +156,8 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     if request.method == "POST":
         username = request.form["username"]
         email = request.form["email"]
@@ -194,6 +196,7 @@ def home():
     return render_template('home.html', logged_in=logged_in)
 
 @app.route('/index')
+@login_required
 def upload():
     logged_in = current_user.is_authenticated
     return render_template('upload.html', logged_in=logged_in)
@@ -254,104 +257,54 @@ def send_emails():
     major = request.form.get('major')
     job_role = request.form.get('job_role')
 
-    if not csv_file_id or not resume_file_id or not user_fullname or not user_email or not user_password or not email_subject or not degree or not major or not job_role:
+    # Check if all required fields are present
+    if not all([csv_file_id, resume_file_id, user_fullname, user_email, user_password, email_subject, degree, major, job_role]):
         flash('All fields are required.')
         return jsonify({'status': 'error', 'message': 'Please ensure all fields are filled before sending emails.'})
 
     try:
-        # Get CSV from GridFS
+        # Fetch CSV file from GridFS
         csv_file = fs.get(ObjectId(csv_file_id))
         csv_content = csv_file.read().decode('utf-8').splitlines()
         reader = csv.reader(csv_content)
         next(reader)  # Skip header row if any
 
-        # Get Resume file from GridFS
+        # Fetch Resume file from GridFS
         resume_file = fs.get(ObjectId(resume_file_id))
         resume_bytes = resume_file.read()
 
+        # Send emails to all HRs listed in CSV
         for row in reader:
             hr_firstname, hr_lastname, hr_email, company = row
-            # Send each email with resume file (from bytes)
-            send_email_with_file(user_fullname, user_email, user_password, email_subject,
-                                 hr_firstname, hr_email, company, resume_bytes,
-                                 degree, major, job_role, resume_file.filename)
+            send_email_with_file(
+                user_fullname, user_email, user_password, email_subject,
+                hr_firstname, hr_email, company, resume_bytes,
+                degree, major, job_role, resume_file.filename
+            )
 
         flash('Hurray! Emails sent successfully! Best of luck!')
+
+        # Safely delete files from GridFS after use
+        try:
+            fs = get_file_system()
+            fs.delete(ObjectId(csv_file_id))
+            fs.delete(ObjectId(resume_file_id))
+            logging.info("✅ Files deleted from GridFS after email sending.")
+        except Exception as delete_error:
+            logging.error(f"⚠️ Error deleting files from GridFS: {delete_error}")
+
+        # Remove file references from session
         session.pop('csv_file_id', None)
         session.pop('resume_file_id', None)
-        return jsonify({'status': 'success', 'message': 'Emails sent successfully!'})
-    except Exception as e:
-        logging.error(f"Error processing files: {e}")
-        flash(f'OOPS! Error processing files:')
-        return jsonify({'status': 'error', 'message': f'Error processing files'})
 
-
-# @app.route('/send_emails', methods=['POST'])
-# @login_required
-# def send_emails():
-    # if current_user.email_count >= 10 and not current_user.is_plus:
-    #     flash('Upgrade to Plus to send more than 10 emails.')
-    #     return jsonify({'status': 'error', 'message': 'Upgrade to Plus to send more than 2 emails.'})
-
-    csv_file_url = session.get('csv_file_url')
-    resume_file_url = session.get('resume_file_url')
-    user_fullname = request.form.get('user_fullname')
-    user_email = request.form.get('user_email')
-    user_password = request.form.get('user_password')
-    email_subject = request.form.get('email_subject')
-    degree = request.form.get('degree')
-    major = request.form.get('major')
-    job_role = request.form.get('job_role')
-
-
-    if not csv_file_url or not resume_file_url or not user_fullname or not user_email or not user_password or not email_subject or not degree or not major or not job_role:
-        flash('All fields are required.')
-        return jsonify({'status': 'error', 'message': 'Please ensure all fields are filled before sending emails.'})
-
-    try:
-        # Extract the file name from the URL
-        csv_file_name = csv_file_url.split('/')[-1]
-        blob = bucket.blob(f'csv_files/{csv_file_name}')
-        csv_file = blob.download_as_text().splitlines()
-        reader = csv.reader(csv_file)
-        next(reader)  # Skip header row if present
-        for row in reader:
-            hr_firstname, hr_lastname, hr_email, company = row
-            # Call send_email with recipient data and resume_filename
-            send_email(user_fullname, user_email, user_password, email_subject, hr_firstname, hr_email, company, resume_file_url, degree, major, job_role)
-        # current_user.email_count += 1
-        # db.session.commit()
-        flash('Hurray! Emails sent successfully! I wish you luck in your job search.')
-        
-        # Delete the files from Google Cloud Storage
-        csv_blob = bucket.blob(f'csv_files/{csv_file_name}')
-        resume_blob = bucket.blob(f'resume_files/{resume_file_url.split("/")[-1]}')
-        csv_blob.delete()
-        resume_blob.delete()
-
-        session.pop('csv_file_url', None)
-        session.pop('resume_file_url', None)
-        return jsonify({'status': 'success', 'message': 'Emails sent successfully!'})
-    except Exception as e:
-        logging.error(f"Error processing files: {e}")
-        flash(f'OOPS! Error processing files: {str(e)}')
-        return jsonify({'status': 'error', 'message': f'Error processing files: {str(e)}'})
-
-def delete_file_from_gcs(bucket_name, file_path):
-    """Deletes a file from Google Cloud Storage, but prevents 404 errors."""
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(file_path)
-
-    try:
-        blob.delete()
-        return {"success": True, "message": "✅ File deleted successfully!"}
-
-    except NotFound:
-        return {"success": False, "message": "⚠️ File not found. It may have been deleted already."}
+        return jsonify({'status': 'success', 'message': 'Emails sent and files cleaned up successfully!'})
 
     except Exception as e:
-        return {"success": False, "message": f"❌ An error occurred: {str(e)}"}
+        logging.error(f"❌ Error in send_emails route: {e}")
+        flash('OOPS! Something went wrong while sending emails.')
+        return jsonify({'status': 'error', 'message': 'An error occurred while processing your request.'})
+
+
 
 @app.route('/privacypolicy')
 def privacy_policy():
