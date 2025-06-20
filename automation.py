@@ -7,17 +7,18 @@ import smtplib
 import csv
 import logging
 import os
-import requests
-from google.cloud import storage
+# import requests
+# from google.cloud import storage
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from dotenv import load_dotenv
-import base64
-import json
+# import base64
+# import json
 from pymongo import MongoClient  
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson.objectid import ObjectId
-# from db import db
-from db import get_database, get_file_system
+from db import db
+# from db import get_database
+from gridfs import GridFS
 
 
 # Load environment variables
@@ -31,7 +32,9 @@ mongo_uri = os.environ.get("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client.get_database("auto_emailer")  # Change the database name as needed
 users_collection = db["users"]
-fs = get_file_system()
+fs = GridFS(db)
+# Sirf PyMongo ke logs band
+logging.getLogger('pymongo').setLevel(logging.WARNING)
 
 # Flask-Login setup
 login_manager = LoginManager(app)
@@ -136,7 +139,7 @@ def login():
         return redirect(url_for('home'))  # Send to home
     
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form.get('email').lower()
         password = request.form["password"]
 
         user = users_collection.find_one({"email": email})
@@ -159,8 +162,8 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     if request.method == "POST":
-        username = request.form["username"]
-        email = request.form["email"]
+        username = request.form["username"].lower()
+        email = request.form.get('email').lower()
         password = request.form["password"]
 
         # Check if email already exists
@@ -286,7 +289,6 @@ def send_emails():
 
         # Safely delete files from GridFS after use
         try:
-            fs = get_file_system()
             fs.delete(ObjectId(csv_file_id))
             fs.delete(ObjectId(resume_file_id))
             logging.info("✅ Files deleted from GridFS after email sending.")
